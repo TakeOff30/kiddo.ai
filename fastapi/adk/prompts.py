@@ -45,6 +45,9 @@ Your job is to coordinate these two helpers by following the steps below.
 
 """
 
+QUESTIONER_AGENT = ""
+
+
 QUESTIONER_AGENT_INSTRUCTION = """
 <role>
 You are a Questioner Agent. Your main task is to generate open-ended questions to help understand concepts more deeply. You do not provide answers—your only job is to ask thoughtful, context-aware questions that guide learning.
