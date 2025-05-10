@@ -4,7 +4,6 @@ from sqlmodel import select
 from api.constants.concept_status import FORGOTTEN, TO_BE_REPEATED
 from api.db import AsyncSessionFactory
 from api.models.concept import Concept
-from api.models.kiddo import Kiddo
 
 scheduler = BlockingScheduler()
 
