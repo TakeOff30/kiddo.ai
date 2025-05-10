@@ -89,7 +89,7 @@ def upload_file(file: UploadFile = File(...), kiddo_id: int = Query(...)):
         session_obj = {
             "kiddo_id": str(kiddo_id),
         }
-        run_agent(pdf_extractor_agent, "pdf_agent_session", session_obj, content)
+        run_agent(pdf_extractor_agent, session_obj, content)
         return Response(content="PDF loaded", media_type="text/plain")
     finally:
         os.remove(tmp_path)

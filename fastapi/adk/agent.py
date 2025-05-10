@@ -21,6 +21,8 @@ concept_classifier_agent = LlmAgent(
     description='The agent that establishes the correctness of the Kiddo\'s understanding of a concept',
     instruction=CONCEPT_CLASSIFIER_AGENT_INSTRUCTION,
     tools=[query_notes]
+    #instruction=
+    output_key='concept_color'
 )
 
 related_concept_choser_agent = LlmAgent(

@@ -2,7 +2,10 @@ from fastapi.constants.concept_status import LEARNED, WRONG
 from fastapi.services.vector_db_service import query_notes
 from sqlmodel import select
 from fastapi.db import AsyncSessionFactory
-from fastapi.models.concept import Concept, Kiddo # Make sure Concept model is defined in fastapi/models/concept.py
+from fastapi.services.vector_db_service import query_notes
+from sqlmodel import select
+from fastapi.models.concept import Concept # Make sure Concept model is defined in fastapi/models/concept.py
+from fastapi.constants.concept_status import LEARNED, WRONG
 from google.adk.tools import ToolContext
 from google.adk.tools.agent_tool import AgentTool
 
