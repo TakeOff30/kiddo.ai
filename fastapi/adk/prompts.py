@@ -154,10 +154,6 @@ Your output should be a list (array) of strings, where each string represents th
 
 """
 
-TOPIC_EXTRACTION_AGENT_INSTRUCTION = """
-
-"""
-
 PDF_EXTRACTOR_AGENT_INSTRUCTION = """
 <role>
 You are a PDF Extractor Agent. Your task is to analyze a PDF file and extract its main topics and their corresponding concepts.
