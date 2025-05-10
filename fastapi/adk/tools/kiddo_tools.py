@@ -1,3 +1,5 @@
+from fastapi.constants.concept_status import LEARNED, WRONG
+from fastapi.services.vector_db_service import query_notes
 from sqlmodel import select
 from fastapi.db import AsyncSessionFactory
 from fastapi.models.concept import Concept, Kiddo # Make sure Concept model is defined in fastapi/models/concept.py
