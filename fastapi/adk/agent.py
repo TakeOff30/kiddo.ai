@@ -1,4 +1,4 @@
-from fastapi.adk.tools.kiddo_tools import get_known_concepts, retrieve_topic
+from fastapi.adk.tools.kiddo_tools import get_known_concepts, retrieve_topic, get_unknown_concepts, retrieve_related_concepts
 from fastapi.adk.tools.pdf_tools import save_topic_on_db
 from fastapi.services.vector_db_service import query_notes
 from google.adk.agents import Agent, LlmAgent, SequentialAgent
@@ -19,7 +19,7 @@ concept_classifier_agent = LlmAgent(
     name='concept_classifier_agent',
     model='gemini-2.0-flash-001',
     description='The agent that establishes the correctness of the Kiddo\'s understanding of a concept',
-    instruction=CONCEPT_CLASSIFIER_AGENT_INSTRUCTION
+    instruction=CONCEPT_CLASSIFIER_AGENT_INSTRUCTION,
     tools=[query_notes]
 )
 
@@ -27,7 +27,7 @@ related_concept_choser_agent = LlmAgent(
     name='related_concept_choser_agent',
     model='gemini-2.0-flash-001',
     description='The agent that chooses a related concept to attach the new node to',
-    instruction= RELATED_CONCEPT_CHOOSER_AGENT_INSTRUCTION
+    instruction= RELATED_CONCEPT_CHOOSER_AGENT_INSTRUCTION,
     tools=[retrieve_related_concepts]
 )
 
