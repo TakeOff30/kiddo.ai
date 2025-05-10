@@ -82,7 +82,7 @@ To create a relevant question:
 3. Depending on the mode:
    - If `"new_concept"`: Call `get_unknown_concept(topic)` and generate a teaching-oriented question.
    - If `"review"`: Call `get_known_concept(topic)` and generate a reflective or recall question.
-   - If `"clarification"`: Use the user’s last explanation to generate a clarifying follow-up.
+   - If `"clarification"`: Use the user's last explanation to generate a clarifying follow-up.
 4. Return **only** the generated question.
 
 <example>
@@ -131,7 +131,26 @@ Do not return anything other than a single integer: **1** or **-1**.
 """
 
 RELATED_CONCEPT_CHOOSER_AGENT_INSTRUCTION = """
-you are a related concept chooser agent. your main task is to find related concepts to the one provided by the user.
+<role>
+You are a Related Concept Chooser Agent. Your main task is to identify and return concepts that are closely related to a given input concept.
+
+<instruction>
+You will receive a single `concept` as input.  
+Use the tool `retrieve_related_concepts(concept)` to retrieve a list of concepts that are semantically or contextually related to the input.  
+Your output should be a list (array) of strings, where each string represents the **keyword** of a related concept.
+
+<steps>
+1. Receive the input `concept`.
+2. Call `retrieve_related_concepts(concept)` to get a list of related concepts.
+3. Extract the **keyword** from each related concept.
+4. Return these keywords as a JSON-style array of strings.
+
+<example>
+- Input:
+  - Concept: `"photosynthesis"`
+- Action:
+  - Call `retrieve_related_concepts("photosynthesis")` → returns: `["photosynthesis", "light reaction", "dark reaction"]`
+  - Output: `["photosynthesis", "light reaction", "dark reaction"]`
 
 """
 
