@@ -1,5 +1,5 @@
 from api.adk.prompts import CONCEPT_CHOOSER_AGENT_INSTRUCTION
-from api.constants.concept_status import LEARNED, WRONG
+from api.constants.concept_status import WRONG, TO_BE_REPEATED
 from api.models.kiddo import Kiddo
 from api.services.vector_db_service import query_notes
 from sqlmodel import select
@@ -82,12 +82,12 @@ async def retrieve_related_concepts(cxt: ToolContext, concept: str):
     return concepts
 
 
-async def insert_concept(concept_keyword, cxt: ToolContext) -> Concept:
+async def insert_concept(concept_keyword, cxt: ToolContext):
     """
     This function inserts a new concept into the database.
     """
     if cxt.state["concept_color"] == "1":
-        status = LEARNED
+        status = TO_BE_REPEATED
     else:
         status = WRONG
     async with AsyncSessionFactory() as session:
@@ -102,4 +102,3 @@ async def insert_concept(concept_keyword, cxt: ToolContext) -> Concept:
         session.add(concept)
         await session.commit()
         await session.refresh(concept)
-    return concept
