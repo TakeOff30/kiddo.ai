@@ -84,6 +84,7 @@ def upload_file(file: UploadFile = File(...), kiddo_id: int = Query(...)):
         
     try:
         load_pdf_on_vector_db(tmp_path)
+        
 
         session_obj = {
             "kiddo_id": str(kiddo_id),
