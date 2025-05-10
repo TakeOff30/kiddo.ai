@@ -1,0 +1,15 @@
+from datetime import date
+from typing import List, Optional
+from sqlmodel import Field, SQLModel
+from constants.concept_status import CREATED
+
+class Concept(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    text: str
+    keyworkd: str
+    main_argument: str
+
+    status: str = Field(default=CREATED)
+    last_repetion: Optional[date] = None
+
+    kiddo_id: int = Field(foreign_key="kiddo.id")

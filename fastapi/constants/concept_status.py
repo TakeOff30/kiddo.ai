@@ -1,0 +1,5 @@
+CREATED= "created"
+TO_BE_REPEATED= "to_be_repeated"
+LEARNED= "learned"
+WRONG= "wrong"
+FORGOTTEN= "forgotten"
