@@ -10,7 +10,6 @@ from google.adk.tools.agent_tool import AgentTool
 import datetime
 
 
-
 async def get_known_concepts(cxt: ToolContext) -> list:
     """
     This function retrieves from the database the list of concepts that the Kiddo 
@@ -66,11 +65,11 @@ concept_choser_agent = LlmAgent(
     name='concept_choser',
     model='gemini-2.0-flash-001',
     description='The agent that chooses a related concept to attach the new node to',
-    instruction=CONCEPT_CHOSER_AGENT_INSTRUCTION,
+    instruction=CONCEPT_CHOOSER_AGENT_INSTRUCTION,
     tools=[get_known_concepts]
 )
 
-async def retieve_related_concepts(cxt: ToolContext, concept: str):
+async def retrieve_related_concepts(cxt: ToolContext, concept: str):
     """
     This function retrieves from the database the list of concepts related to the topic
     """
