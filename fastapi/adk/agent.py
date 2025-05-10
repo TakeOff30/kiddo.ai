@@ -20,8 +20,7 @@ concept_classifier_agent = LlmAgent(
     model='gemini-2.0-flash-001',
     description='The agent that establishes the correctness of the Kiddo\'s understanding of a concept',
     instruction=CONCEPT_CLASSIFIER_AGENT_INSTRUCTION,
-    tools=[query_notes]
-    #instruction=
+    tools=[query_notes],
     output_key='concept_color'
 )
 
