@@ -7,3 +7,7 @@ asyncpg
 greenlet
 weaviate-client
 google-adk
+sentence-transformers
+nltk
+PyMuPDF
+fitz

@@ -1,9 +1,11 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, UploadFile, File, Response
 from sqlmodel import SQLModel, Field, select # O from sqlalchemy.future import select ecc.
 from typing import List, Optional
-
+from rag import load_pdf_on_vector_db
 from item import Item
+import tempfile
+import os
 
 # Importa la dipendenza e (se usi SQLModel) la funzione di inizializzazione
 from db import create_tables, get_session
@@ -25,16 +27,16 @@ app = FastAPI(lifespan=lifespan)
 
 # ENDPOINTS
 
-@app.post("/palaces/", response_model=Item)
-async def create_item(db: AsyncSession = Depends(get_session)):
-    item = Item(name="Palazzo Ducale", description="Un palazzo storico a Venezia")
-    db.add(item)
-    await db.commit()
-    await db.refresh(item) # Ricarica l'item per avere l'ID generato
-    return item
-
-@app.get("/palaces/", response_model=List[Item])
-async def read_items(db: AsyncSession = Depends(get_session)):
-    result = await db.execute(select(Item))
-    items = result.scalars().all()
-    return items
+@app.post("/upload-pdf")
+def upload_file(file: UploadFile = File(...)):
+    filename = file.filename.lower()
+    
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        tmp.write(file.file.read())
+        tmp_path = tmp.name
+        
+    try:
+        load_pdf_on_vector_db(tmp_path)
+        return Response(content="PDF loaded", media_type="text/plain")
+    finally:
+        os.remove(tmp_path)
