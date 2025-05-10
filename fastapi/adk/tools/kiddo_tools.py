@@ -1,4 +1,6 @@
+from fastapi.adk.prompts import CONCEPT_CHOOSER_AGENT_INSTRUCTION
 from fastapi.constants.concept_status import LEARNED, WRONG
+from fastapi.models.kiddo import Kiddo
 from fastapi.services.vector_db_service import query_notes
 from sqlmodel import select
 from fastapi.db import AsyncSessionFactory
@@ -8,6 +10,7 @@ from fastapi.models.concept import Concept # Make sure Concept model is defined 
 from fastapi.constants.concept_status import LEARNED, WRONG
 from google.adk.tools import ToolContext
 from google.adk.tools.agent_tool import AgentTool
+from google.adk.agents import LlmAgent
 
 
 async def get_known_concepts(cxt: ToolContext) -> list:
@@ -65,7 +68,7 @@ concept_choser_agent = LlmAgent(
     name='concept_choser',
     model='gemini-2.0-flash-001',
     description='The agent that chooses a related concept to attach the new node to',
-    instruction=CONCEPT_CHOSER_AGENT_INSTRUCTION,
+    instruction=CONCEPT_CHOOSER_AGENT_INSTRUCTION,
     tools=[get_known_concepts]
 )
 
