@@ -4,19 +4,21 @@ from sentence_transformers import SentenceTransformer
 import weaviate
 
 model = SentenceTransformer('all-MiniLM-L6-v2') # embedding output is 384 dimensions
-client = weaviate.Client("http://weaviate:8080") # weaviate client
+client = weaviate.connect_to_local(
+    host="weaviate",  # Use a string to specify the host
+    port=8080,
+    grpc_port=50051,
+)
+
 # Weaviate client is used to connect to the Weaviate instance running on localhost:8080
 
-client.schema.create_class({ ## Create a class in Weaviate to store the chunks of text
-    "class": "NoteChunks",
-    "vectorizer": "none",
-    "properties": [
-        {
-            "name": "text",
-            "dataType": ["text"]
-        },
-    ]
-})
+client.collections.create(
+    name="NoteChunks",
+    properties=[
+        Property(name="name", data_type=DataType.TEXT),
+    ],
+    vectorizer_config=None  # No automatic vectorization
+)
 
 def extract_text_from_pdf(pdf_path):
     # Open the PDF file
@@ -77,24 +79,19 @@ def load_pdf_on_vector_db(pdf_path):
 
     # Store the chunks and their embeddings in Weaviate
     for i, chunk in enumerate(chunks):
-        client.data_object.create(
-            data_object={ "text": chunk },          
-            class_name="NoteChunks",
-            vector=embeddings[i].tolist(),  # Convert numpy array to list
+        notes = client.collections.get("NoteChunks")
+        notes.data.insert(
+            properties={
+                "text": chunk,
+            },
+            vector=embeddings[i].tolist(),
         )
         
 def query_notes(question):
     question_embedding = model.encode([question])[0] #embed the array of questions and return only the first one
-
-    # Perform a vector search in Weaviate
-    result = client.query.get(
-        class_name="NoteChunks",
-        properties=["text"],
-        vector=question_embedding.tolist(), 
-        limit=5,  # Number of results to return
-    ).do()
-
-    # Extract the text from the results
-    notes = [item["text"] for item in result["data"]["Get"]["NoteChunks"]]
-
-    return notes
+    notes = client.collections.get("NoteChunks")
+    results = notes.query.near_vector(
+        near_vector=question_embedding.tolist(),
+        limit=3
+    )
+    return [obj.properties["text"] for obj in results.objects]
