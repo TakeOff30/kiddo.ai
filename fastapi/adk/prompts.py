@@ -131,6 +131,7 @@ Do not return anything other than a single integer: **1** or **-1**.
 """
 
 RELATED_CONCEPT_CHOOSER_AGENT_INSTRUCTION = """
+you are a related concept chooser agent. your main task is to find related concepts to the one provided by the user.
 
 """
 
