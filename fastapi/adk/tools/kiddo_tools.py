@@ -4,6 +4,8 @@ from sqlmodel import select
 from fastapi.db import AsyncSessionFactory
 from fastapi.models.concept import Concept, Kiddo # Make sure Concept model is defined in fastapi/models/concept.py
 from google.adk.tools import ToolContext
+from google.adk.tools.agent_tool import AgentTool
+
 
 async def get_known_concepts(cxt: ToolContext) -> list:
     """
@@ -56,8 +58,22 @@ async def get_pdf_concepts(cxt: ToolContext, concepts_context: str) -> list:
     """
     return query_notes(concepts_context)
 
+concept_choser_agent = LlmAgent(
+    name='concept_choser',
+    model='gemini-2.0-flash-001',
+    description='The agent that chooses a related concept to attach the new node to',
+    instruction=CONCEPT_CHOSER_AGENT_INSTRUCTION,
+    tools=[get_known_concepts]
+)
 
-# async def retieve_related_concepts(cxt: ToolContext, topic: str)
+async def retieve_related_concepts(cxt: ToolContext, concept: str):
+    """
+    This function retrieves from the database the list of concepts related to the topic
+    """
+    cxt.state["concept_to_link"] = concept
+    agent_tool = AgentTool(agent=concept_choser_agent)
+    concepts = await agent_tool.run_async()
+    return concepts
 
 
 async def insert_concept(concept_keyword, cxt: ToolContext) -> Concept:
