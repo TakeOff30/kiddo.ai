@@ -68,13 +68,8 @@ def embed_chunks(chunks):
     return model.encode(chunks, show_progress_bar=True)
 
 def load_pdf_on_vector_db(pdf_path):
-    # Extract text from the PDF
     text = extract_text_from_pdf(pdf_path)
-
-    # Chunk the text into smaller pieces
     chunks = chunk_text(text, chunk_size=5)
-
-    # Embed the chunks
     embeddings = embed_chunks(chunks)
 
     # Store the chunks and their embeddings in Weaviate
