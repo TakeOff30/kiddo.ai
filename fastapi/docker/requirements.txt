@@ -1,0 +1,9 @@
+
+fastapi[standard]
+uvicorn[standard]
+sqlalchemy
+sqlmodel
+asyncpg
+greenlet
+weaviate-client
+google-adk
