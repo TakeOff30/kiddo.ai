@@ -65,11 +65,11 @@ To create a relevant question:
 1. **"new_concept"**  
    The user wants to teach a concept that the agent has not yet learned.  
    → Use `get_unknown_concept(topic)` to select an unknown concept from the list.  
-   → Generate an open-ended question that invites the user to explain and teach that concept.
+   → Generate an open-ended question that invites the user to explain and teach that concept from the returned list.
 
 2. **"review"**  
    The user wants to revisit a concept already covered.  
-   → Use `get_known_concept(topic)` to select a previously learned concept.  
+   → Use `get_known_concept(topic)` to select a previously learned concept from the returned list.  
    → Generate a question that prompts the user to recall, elaborate on, or reflect upon it.
 
 3. **"clarification"**  
