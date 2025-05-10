@@ -1,12 +1,13 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends, UploadFile, File, Response
+from fastapi import FastAPI, Depends, UploadFile, File, Response, Query
 from fastapi.models.kiddo import Kiddo
+from fastapi.services.agent_engine import build_pdf_content, run_agent
 from sqlmodel import SQLModel, Field, select # O from sqlalchemy.future import select ecc.
 from typing import List, Optional
-from rag import load_pdf_on_vector_db
-from item import Item
+from fastapi.services.vector_db_service import load_pdf_on_vector_db
 import tempfile
 import os
+from fastapi.adk.agent import pdf_extractor_agent
 
 # Importa la dipendenza e (se usi SQLModel) la funzione di inizializzazione
 from db import create_tables, get_session
@@ -75,15 +76,19 @@ async def delete_kiddo(kiddo_id: int, db: AsyncSession = Depends(get_session)):
     return existing_kiddo
 
 @app.post("/api/upload-pdf")
-def upload_file(file: UploadFile = File(...)):
-    filename = file.filename.lower()
-    
+def upload_file(file: UploadFile = File(...), kiddo_id: int = Query(...)):
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         tmp.write(file.file.read())
+        content = build_pdf_content(file.file.read())
         tmp_path = tmp.name
         
     try:
         load_pdf_on_vector_db(tmp_path)
+
+        session_obj = {
+            "kiddo_id": str(kiddo_id),
+        }
+        run_agent(pdf_extractor_agent, "pdf_agent_session", session_obj, content)
         return Response(content="PDF loaded", media_type="text/plain")
     finally:
         os.remove(tmp_path)
