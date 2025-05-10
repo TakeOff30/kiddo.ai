@@ -10,6 +10,7 @@ class Kiddo(SQLModel, table=True):
     exame_name: str
     exam_date: date
     studying_days: str
+    img_url: Optional[str] = None
 
     concepts: List["Concept"] = Relationship(back_populates="kiddo")
 
