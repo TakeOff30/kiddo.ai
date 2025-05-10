@@ -1,6 +1,6 @@
-from fastapi.adk.tools.kiddo_tools import get_known_concepts, retrieve_topic, get_unknown_concepts, retrieve_related_concepts
-from fastapi.adk.tools.pdf_tools import save_topic_on_db
-from fastapi.services.vector_db_service import query_notes
+from api.adk.tools.kiddo_tools import get_known_concepts, retrieve_topic, get_unknown_concepts, retrieve_related_concepts
+from api.adk.tools.pdf_tools import save_topic_on_db
+from api.services.vector_db_service import query_notes
 from google.adk.agents import Agent, LlmAgent, SequentialAgent
 from .prompts import KIDDO_AGENT_INSTRUCTION, QUESTIONER_AGENT_INSTRUCTION, PDF_EXTRACTOR_AGENT_INSTRUCTION, CONCEPT_CLASSIFIER_AGENT_INSTRUCTION, RELATED_CONCEPT_CHOOSER_AGENT_INSTRUCTION
 

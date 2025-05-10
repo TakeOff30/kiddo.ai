@@ -1,13 +1,14 @@
-from fastapi.constants.concept_status import LEARNED, WRONG
-from fastapi.services.vector_db_service import query_notes
+from api.constants.concept_status import LEARNED, WRONG
+from api.services.vector_db_service import query_notes
 from sqlmodel import select
-from fastapi.db import AsyncSessionFactory
-from fastapi.services.vector_db_service import query_notes
+from api.db import AsyncSessionFactory
+from api.services.vector_db_service import query_notes
 from sqlmodel import select
-from fastapi.models.concept import Concept # Make sure Concept model is defined in fastapi/models/concept.py
-from fastapi.constants.concept_status import LEARNED, WRONG
+from api.models.concept import Concept
 from google.adk.tools import ToolContext
 from google.adk.tools.agent_tool import AgentTool
+import datetime
+
 
 
 async def get_known_concepts(cxt: ToolContext) -> list:
@@ -88,7 +89,14 @@ async def insert_concept(concept_keyword, cxt: ToolContext) -> Concept:
     else:
         status = WRONG
     async with AsyncSessionFactory() as session:
-        concept = Concept(keyword=concept_keyword, text=concept_keyword, topic=concept_keyword, status=status)
+        concept = Concept(
+            keyword=concept_keyword, 
+            text=concept_keyword, 
+            topic=concept_keyword, 
+            status=status, 
+            last_repetion=datetime.now(), 
+            kiddo_id=cxt.state["kiddo_id"],
+        )
         session.add(concept)
         await session.commit()
         await session.refresh(concept)

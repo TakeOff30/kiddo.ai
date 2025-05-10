@@ -1,7 +1,7 @@
 from datetime import date
 import json
 from typing import Any, List, Optional
-from fastapi.models.concept import Concept
+from api.models.concept import Concept
 from sqlmodel import Field, SQLModel, Relationship
 
 

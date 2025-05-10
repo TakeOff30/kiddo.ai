@@ -1,25 +1,15 @@
 services:
-  fastapi:
+  api:
     build:
       context: .
-      dockerfile: ./fastapi/docker/Dockerfile
-    container_name: fastapi
+      dockerfile: ./api/docker/Dockerfile
+    container_name: api
     ports:
       - "8000:8000"
     depends_on:
       - db
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/${POSTGRES_DB}
-
-  streamlit:
-    build:
-      context: .
-      dockerfile: ./streamlit/docker/Dockerfile
-    container_name: streamlit
-    ports:
-      - "8501:8501"
-    depends_on:
-      - fastapi
 
   db:
     image: postgres:14-alpine

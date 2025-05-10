@@ -1,5 +1,5 @@
-from fastapi.db import AsyncSessionFactory
-from fastapi.models.kiddo import Kiddo
+from api.db import AsyncSessionFactory
+from api.models.kiddo import Kiddo
 from sqlmodel import select
 
 

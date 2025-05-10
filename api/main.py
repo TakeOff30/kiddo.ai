@@ -1,13 +1,13 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends, UploadFile, File, Response, Query
-from fastapi.models.kiddo import Kiddo
-from fastapi.services.agent_engine import build_pdf_content, run_agent
+from api import FastAPI, Depends, UploadFile, File, Response, Query
+from api.models.kiddo import Kiddo
+from api.services.agent_engine import build_pdf_content, run_agent
 from sqlmodel import SQLModel, Field, select # O from sqlalchemy.future import select ecc.
 from typing import List, Optional
-from fastapi.services.vector_db_service import load_pdf_on_vector_db
+from api.services.vector_db_service import load_pdf_on_vector_db
 import tempfile
 import os
-from fastapi.adk.agent import pdf_extractor_agent
+from api.adk.agent import pdf_extractor_agent
 
 # Importa la dipendenza e (se usi SQLModel) la funzione di inizializzazione
 from db import create_tables, get_session
