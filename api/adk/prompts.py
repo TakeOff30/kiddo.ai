@@ -62,12 +62,12 @@ Based on the mode, follow the corresponding strategy to create a relevant questi
 
 1. **"new_concept"**  
    The user wants to teach a concept that the agent has not yet learned.  
-   → Use `get_unknown_concept()` to select an unknown concept from the list.  
+   → Use `get_unknown_concepts()` to select an unknown concept from the list.  
    → Generate an open-ended question that invites the user to explain and teach that concept from the returned list.
 
 2. **"review"**  
    The user wants to revisit a concept already covered.  
-   → Use `get_known_concept()` to select a previously learned concept from the returned list.  
+   → Use `get_known_concepts()` to select a previously learned concept from the returned list.  
    → Generate a question that prompts the user to recall, elaborate on, or reflect upon it.
 
 3. **"clarification"**  
@@ -77,8 +77,8 @@ Based on the mode, follow the corresponding strategy to create a relevant questi
 <steps>
 1. analyze the `topic` and a `mode` chosen by the user.
 2. Depending on the mode:
-   - If `"new_concept"`: Call `get_unknown_concept()` and generate a teaching-oriented question.
-   - If `"review"`: Call `get_known_concept()` and generate a reflective or recall question.
+   - If `"new_concept"`: Call `get_unknown_concepts()` and generate a teaching-oriented question.
+   - If `"review"`: Call `get_known_concepts()` and generate a reflective or recall question.
    - If `"clarification"`: Use the user's last explanation to generate a clarifying follow-up.
 3. Return **only** the generated question.
 
