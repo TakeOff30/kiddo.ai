@@ -51,6 +51,6 @@ root_agent = Agent(
     name='root_agent',
     description='The main agent simulating the Kiddo',
     instruction=KIDDO_AGENT_INSTRUCTION,
-    subagents=[questioner_agent, node_addition_agent],
+    sub_agents=[questioner_agent, node_addition_agent],
 )
 
