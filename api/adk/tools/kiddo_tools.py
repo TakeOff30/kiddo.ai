@@ -96,7 +96,7 @@ async def insert_concept(concept_keyword, cxt: ToolContext):
             text=concept_keyword, 
             topic=concept_keyword, 
             status=status, 
-            last_repetion=datetime.now(), 
+            last_repetion=datetime.now(datetime.timezone.utc), 
             kiddo_id=cxt.state["kiddo_id"],
         )
         session.add(concept)

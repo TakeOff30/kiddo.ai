@@ -1,8 +1,8 @@
 from contextlib import asynccontextmanager
-from api import FastAPI, Depends, UploadFile, File, Response, Query
+from fastapi import FastAPI, Depends, UploadFile, File, Response, Query
 from api.models.kiddo import Kiddo
 from api.services.agent_engine import build_pdf_content, run_agent
-from sqlmodel import SQLModel, Field, select # O from sqlalchemy.future import select ecc.
+from sqlmodel import select # O from sqlalchemy.future import select ecc.
 from typing import List, Optional
 from api.services.vector_db_service import load_pdf_on_vector_db
 import tempfile

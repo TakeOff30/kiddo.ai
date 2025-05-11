@@ -1,7 +1,7 @@
-import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from sqlmodel import Field, SQLModel, Relationship
-from constants.concept_status import CREATED
+from api.constants.concept_status import CREATED
 
 class Concept(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -16,4 +16,4 @@ class Concept(SQLModel, table=True):
 
     linked_concepts: List["Concept"] = Relationship(back_populates="linked_to")
 
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.now(timezone.utc))

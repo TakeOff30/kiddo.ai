@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from apscheduler.schedulers.blocking import BlockingScheduler
 from sqlmodel import select
 from api.constants.concept_status import FORGOTTEN, TO_BE_REPEATED
@@ -9,7 +9,7 @@ scheduler = BlockingScheduler()
 
 @scheduler.set_concepts_forgotten('cron', day_of_week='mon-sun', hour=1)
 async def set_concepts_forgotten():
-    twenty_four_hours_ago = datetime.now(datetime.timezone.utc) - timedelta(hours=24)
+    twenty_four_hours_ago = datetime.now(timezone.utc) - timedelta(hours=24)
     async with AsyncSessionFactory() as session:
         concepts_to_review = await session.execute(
             select(Concept).where(
