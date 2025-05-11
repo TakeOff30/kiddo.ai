@@ -10,7 +10,7 @@ import os
 from api.adk.agent import pdf_extractor_agent
 
 # Importa la dipendenza e (se usi SQLModel) la funzione di inizializzazione
-from db import create_tables, get_session
+from .db import create_tables, get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
 @asynccontextmanager

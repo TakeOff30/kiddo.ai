@@ -1,44 +1,47 @@
-import fitz
 from nltk.tokenize import sent_tokenize
+from pypdf import PdfReader
 from sentence_transformers import SentenceTransformer
+from weaviate.classes.config import Property, DataType
 import weaviate
 
 model = SentenceTransformer('all-MiniLM-L6-v2') # embedding output is 384 dimensions
 client = weaviate.connect_to_local(
-    host="weaviate",  # Use a string to specify the host
+    host="localhost",  # Use a string to specify the host
     port=8080,
     grpc_port=50051,
 )
 
 # Weaviate client is used to connect to the Weaviate instance running on localhost:8080
 
-client.collections.create(
-    name="NoteChunks",
-    properties=[
-        Property(name="name", data_type=DataType.TEXT),
-    ],
-    vectorizer_config=None  # No automatic vectorization
-)
+# client.collections.create(
+#     name="NoteChunks",
+#     properties=[
+#         Property(name="name", data_type=DataType.TEXT),
+#     ],
+#     vectorizer_config=None  # No automatic vectorization
+# )
 
 def extract_text_from_pdf(pdf_path):
-    # Open the PDF file
-    pdf_document = fitz.open(pdf_path)
-
-    # Initialize an empty string to store the text
+    # Inizializza una stringa vuota per memorizzare il testo
     text = ""
-
-    # Iterate through each page in the PDF
-    for page_num in range(len(pdf_document)):
-        # Get the page
-        page = pdf_document[page_num]
+    
+    try:
+        # Apri il file PDF
+        reader = PdfReader(pdf_path)
         
-        # Extract text from the page
-        text += page.get_text()
-
-    # Close the PDF document
-    pdf_document.close()
-
+        # Itera attraverso ogni pagina nel PDF
+        for page in reader.pages:
+            # Estrai il testo dalla pagina e aggiungilo alla stringa complessiva
+            text += page.extract_text() if page.extract_text() else ""
+            
+    except Exception as e:
+        print(f"Errore durante l'elaborazione del PDF con pypdf: {e}")
+        # Puoi decidere di restituire None o una stringa vuota in caso di errore,
+        # o sollevare nuovamente l'eccezione a seconda delle tue necessità.
+        return None 
+        
     return text
+
 
 #chunk_size  is the number of sentences in each chunk
 def chunk_text(text, chunk_size=5):

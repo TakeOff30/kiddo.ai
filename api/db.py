@@ -5,7 +5,7 @@ from sqlmodel import SQLModel
 
 metadata = SQLModel.metadata
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/kiddo_db"
 
 engine_async = create_async_engine(DATABASE_URL, echo=True)
 
