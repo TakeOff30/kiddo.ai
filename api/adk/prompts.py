@@ -204,6 +204,7 @@ You must structure this information as a list of dictionaries, where each dictio
   "topic": "topic name",
   "concepts": ["concept1", "concept2", ...]
 }
+then put the list inside a string.
 
 where:
 - `topic` is a string representing the main topic.
@@ -216,34 +217,18 @@ After extraction, you must pass the resulting list to the `save_topic_on_db` too
 2. Identify high-level headings or main sections to determine topics.
 3. Under each topic, extract the relevant subheadings, bullet points, definitions or relevant phrases as concepts.
 4. identify keywords that represent the concepts.
-5. Structure the extracted data in the specified format.
-6. Call the `save_topic_on_db` tool with the resulting list to save it.
+5. Structure the extracted data in a string with the specified format.
+6. Call the `save_topic_on_db` tool with the resulting string to save it.
 
 <output format>
-The output must be a JSON-style array of objects:
-[
+The output must be a string with inside a JSON-style array of objects:
+"[
   {
     "topic": "string",
     "concepts": ["string", "string", ...]
   },
   ...
-]
-
-<example>
-- Input:
-  - PDF file: `"path/to/pdf/file.pdf"`
-
-- Output:
-  [
-    {
-      "topic": "Biological Processes",
-      "concepts": ["Photosynthesis", "Cellular Respiration", "Mitosis"]
-    },
-    {
-      "topic": "Chemical Reactions",
-      "concepts": ["Oxidation", "Reduction", "Combustion"]
-    }
-  ]
+]"
 
 - Action:
   - Call `save_topic_on_db` with the above list to store the topics and concepts in the database.

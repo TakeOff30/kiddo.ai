@@ -9,6 +9,8 @@ import tempfile
 import os
 from api.adk.agent import pdf_extractor_agent
 
+# docker run -p 8080:8080 -p 50051:50051 cr.weaviate.io/semitechnologies/weaviate:1.30.2
+
 # Importa la dipendenza e (se usi SQLModel) la funzione di inizializzazione
 from .db import create_tables, get_session
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -89,7 +91,7 @@ def upload_file(file: UploadFile = File(...), kiddo_id: int = Query(...)):
         session_obj = {
             "kiddo_id": str(kiddo_id),
         }
-        run_agent(pdf_extractor_agent, session_obj, content)
+        run_agent(pdf_extractor_agent, content, session_obj)
         return Response(content="PDF loaded", media_type="text/plain")
     finally:
         os.remove(tmp_path)
