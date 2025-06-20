@@ -1,10 +1,8 @@
 from api.adk.prompts import CONCEPT_CHOOSER_AGENT_INSTRUCTION
 from api.constants.concept_status import WRONG, TO_BE_REPEATED
 from api.models.kiddo import Kiddo
-from api.services.vector_db_service import query_notes
 from sqlmodel import select
 from api.db import AsyncSessionFactory
-from api.services.vector_db_service import query_notes
 from sqlmodel import select
 from api.models.concept import Concept
 from google.adk.tools import ToolContext
@@ -62,7 +60,7 @@ async def get_pdf_concepts(cxt: ToolContext, concepts_context: str) -> list:
     """
     This function retrieves from the vectorial database the chunks of notes related to the pdf
     """
-    return query_notes(concepts_context)
+    return ""
 
 concept_choser_agent = LlmAgent(
     name='concept_choser',

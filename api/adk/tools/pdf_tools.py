@@ -4,14 +4,24 @@ from google.adk.tools import ToolContext
 from sqlmodel import select
 
 
-async def save_topic_on_db(topic: str):
+async def save_topic_on_db(topics: str):
     print("Saving topic on database...")
 
-    kiddo_id = ToolContext.state["kiddo_id"]
+    # TODO: make the agent return without the `json` prefix
+    cleaned_topics = clean_topics(topics)
+
+    kiddo_id = 1
     async with AsyncSessionFactory() as session:
-        kiddo = await session.execute(select(Kiddo).where(Kiddo.id == kiddo_id))
-        kiddo.topic = topic
+        result = await session.execute(select(Kiddo).where(Kiddo.id == kiddo_id))
+        kiddo = result.scalar_one()
+        kiddo.topics = cleaned_topics
         await session.commit()
         await session.refresh(kiddo)
 
    
+def clean_topics(topics: str) -> str:
+    cleaned = topics.strip('`')
+    if cleaned.startswith("json"):
+        cleaned = cleaned[4:]
+    
+    return cleaned

@@ -22,7 +22,7 @@ def run_agent(agent, content, session_obj = None):
     for event in events:
         if event.is_final_response():
             final_response = event.content.parts[0].text
-            print(f"Final response: {final_response}")
+            return final_response
     
 
 def build_string_content(prompt):

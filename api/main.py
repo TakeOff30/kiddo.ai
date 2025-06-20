@@ -1,15 +1,13 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, UploadFile, File, Response, Query
+from api.adk.tools.pdf_tools import save_topic_on_db
 from api.models.kiddo import Kiddo
 from api.services.agent_engine import build_pdf_content, run_agent
-from sqlmodel import select # O from sqlalchemy.future import select ecc.
+from sqlmodel import select
 from typing import List, Optional
-from api.services.vector_db_service import load_pdf_on_vector_db
 import tempfile
-import os
 from api.adk.agent import pdf_extractor_agent
-
-# docker run -p 8080:8080 -p 50051:50051 cr.weaviate.io/semitechnologies/weaviate:1.30.2
+from api.services.video_db_service import save_pdf_in_vect_db
 
 # Importa la dipendenza e (se usi SQLModel) la funzione di inizializzazione
 from .db import create_tables, get_session
@@ -24,7 +22,6 @@ async def lifespan(app: FastAPI):
     yield
 
     print("Spegnimento dell'applicazione...")
-
 
 
 app = FastAPI(lifespan=lifespan)
@@ -78,20 +75,16 @@ async def delete_kiddo(kiddo_id: int, db: AsyncSession = Depends(get_session)):
     return existing_kiddo
 
 @app.post("/api/upload-pdf")
-def upload_file(file: UploadFile = File(...), kiddo_id: int = Query(...)):
+async def upload_file(file: UploadFile = File(...), kiddo_id: int = Query(...)):
+    stream = file.file.read()
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
-        tmp.write(file.file.read())
-        content = build_pdf_content(file.file.read())
-        tmp_path = tmp.name
+        tmp.write(stream)
+        content = build_pdf_content(stream)
         
-    try:
-        load_pdf_on_vector_db(tmp_path)
-        
+    save_pdf_in_vect_db(tmp.name, file.filename)
 
-        session_obj = {
-            "kiddo_id": str(kiddo_id),
-        }
-        run_agent(pdf_extractor_agent, content, session_obj)
-        return Response(content="PDF loaded", media_type="text/plain")
-    finally:
-        os.remove(tmp_path)
+    res = run_agent(pdf_extractor_agent, content)
+
+    await save_topic_on_db(res)
+
+    return Response(content="PDF loaded", media_type="text/plain")

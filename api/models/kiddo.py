@@ -1,9 +1,10 @@
 from datetime import date
 import json
-from typing import Any, List, Optional
-from api.models.concept import Concept
+from typing import TYPE_CHECKING, Any, List, Optional
 from sqlmodel import Field, SQLModel, Relationship
 
+if TYPE_CHECKING:
+    from api.models.concept import Concept
 
 class Kiddo(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -14,7 +15,6 @@ class Kiddo(SQLModel, table=True):
     topics: Optional[str] = None
 
     concepts: List["Concept"] = Relationship(back_populates="kiddo")
-
 
     def get_studying_days(self) -> List[str]:
         return json.loads(self.studying_days)
