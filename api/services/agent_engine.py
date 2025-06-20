@@ -5,19 +5,22 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-APP_NAME = "appname"
-USER_ID = "user"
+APP_NAME = "my_app"
+USER_ID = "my_user"
 SESSION_ID = "session_id"
 
-def run_agent(agent, content, session_obj = None):
-    session_service = InMemorySessionService()
-    session = session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID)
+async def run_agent(agent, content, session_id=None, session_service=None):
+    # TODO: Use a persistent session service (DatabaseSessionService, VertexAiSessionService)
+    if session_service is None:
+        session_service = InMemorySessionService()
 
-    if session_obj:
-        set_state(session.state, session_obj)
+    if session_id is None:
+        session = session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID)
+        session_id = session.id
+    print(f"Session ID: {session_id}")
 
     runner = Runner(agent=agent, app_name=APP_NAME, session_service=session_service)
-    events = runner.run(user_id=USER_ID, session_id=SESSION_ID, new_message=content)
+    events = runner.run(user_id=USER_ID, session_id=session_id, new_message=content)
 
     for event in events:
         if event.is_final_response():
@@ -33,6 +36,3 @@ def build_pdf_content(image_bytes):
                 types.Part.from_bytes(data=image_bytes, mime_type="application/pdf"),
             ])
 
-def set_state(state, session_obj):
-    for key, value in session_obj.items():
-        state[key] = value

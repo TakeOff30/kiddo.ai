@@ -1,9 +1,10 @@
 .env
 *.py[cod]
+__pycache__
 **/__pycache__/
 **/**/__pycache__/
 __pycache__/
 .DS_Store
 **/.DS_Store
 
-db
+**/video_vector_db_data

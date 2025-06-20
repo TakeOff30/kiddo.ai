@@ -1,15 +1,16 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, UploadFile, File, Response, Query
+from pydantic import BaseModel
 from api.adk.tools.pdf_tools import save_topic_on_db
 from api.models.kiddo import Kiddo
-from api.services.agent_engine import build_pdf_content, run_agent
+from api.services.agent_engine import build_pdf_content, build_string_content, run_agent
 from sqlmodel import select
 from typing import List, Optional
 import tempfile
-from api.adk.agent import pdf_extractor_agent
+from api.adk.agent import pdf_extractor_agent, root_agent
 from api.services.video_db_service import save_pdf_in_vect_db
+from google.adk.sessions import InMemorySessionService, Session
 
-# Importa la dipendenza e (se usi SQLModel) la funzione di inizializzazione
 from .db import create_tables, get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -83,8 +84,32 @@ async def upload_file(file: UploadFile = File(...), kiddo_id: int = Query(...)):
         
     save_pdf_in_vect_db(tmp.name, file.filename)
 
-    res = run_agent(pdf_extractor_agent, content)
+    topics = await run_agent(pdf_extractor_agent, content)
 
-    await save_topic_on_db(res)
+    await save_topic_on_db(topics)
 
     return Response(content="PDF loaded", media_type="text/plain")
+
+
+# TODO: create a session managaer
+SESSION_SERVICE = InMemorySessionService()
+
+@app.post("/api/new_chat")
+async def start_new_chat():
+    session = SESSION_SERVICE.create_session(
+        app_name="my_app",
+        user_id="my_user",
+        # state={"initial_key": "initial_value"}
+    )
+
+    response = await run_agent(root_agent, build_string_content("Hi there!"), session_id=session.id, session_service=SESSION_SERVICE)
+    return { "session_id": session.id, "first_message": response}
+
+class ChatRequest(BaseModel):
+    session_id: str
+    message: str
+
+@app.post("/api/chat")
+async def get_kiddo_message(data: ChatRequest):
+    response = await run_agent(root_agent, build_string_content(data.message), session_id=data.session_id, session_service=SESSION_SERVICE)
+    return { "message": response }

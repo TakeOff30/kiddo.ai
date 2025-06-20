@@ -3,15 +3,13 @@ from api.adk.tools.pdf_tools import save_topic_on_db
 from google.adk.agents import Agent, LlmAgent, SequentialAgent
 from .prompts import KIDDO_AGENT_INSTRUCTION, QUESTIONER_AGENT_INSTRUCTION, PDF_EXTRACTOR_AGENT_INSTRUCTION, CONCEPT_CLASSIFIER_AGENT_INSTRUCTION, RELATED_CONCEPT_CHOOSER_AGENT_INSTRUCTION
 
-# PDF ingestion's angents
+# PDF ingestion's agent
 pdf_extractor_agent = LlmAgent(
     name='pdf_extractor_agent',
     model='gemini-2.0-flash-001',
     description='The agent that extracts the text from the PDF and saves it on the database',
     instruction=PDF_EXTRACTOR_AGENT_INSTRUCTION,
-    tools=[save_topic_on_db]
 )
-
 
 # Kiddo's agents
 concept_classifier_agent = LlmAgent(
