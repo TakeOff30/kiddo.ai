@@ -1,6 +1,6 @@
+from agents import Runner
 from google.genai import types
 from google.adk.sessions import InMemorySessionService
-from google.adk.runners import Runner
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,30 +9,20 @@ APP_NAME = "my_app"
 USER_ID = "my_user"
 SESSION_ID = "session_id"
 
-async def run_agent(agent, content, session_id=None, session_service=None):
-    # TODO: Use a persistent session service (DatabaseSessionService, VertexAiSessionService)
-    if session_service is None:
-        session_service = InMemorySessionService()
+async def run_agent(agent, content):
+    result = await Runner.run(agent, content)
 
-    if session_id is None:
-        session = session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID)
-        session_id = session.id
-    print(f"Session ID: {session_id}")
-
-    runner = Runner(agent=agent, app_name=APP_NAME, session_service=session_service)
-    events = runner.run(user_id=USER_ID, session_id=session_id, new_message=content)
-
-    for event in events:
-        if event.is_final_response():
-            final_response = event.content.parts[0].text
-            return final_response
+    return result.final_output
     
 
 def build_string_content(prompt):
     return types.Content(role="user", parts=[types.Part(text=prompt)])
 
-def build_pdf_content(image_bytes):
-    return types.Content(role="user", parts=[
-                types.Part.from_bytes(data=image_bytes, mime_type="application/pdf"),
-            ])
+def build_pdf_content(file_id: str):
+    return {
+                "role": "user",
+                "content": [{"type": "input_file", "file_id": file_id}],
+            }
 
+def get_session_events(session_service, session_id):
+    return session_service.get_session(app_name="my_app", user_id="my_user", session_id=session_id).events

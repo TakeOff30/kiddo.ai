@@ -204,7 +204,6 @@ You must structure this information as a list of dictionaries, where each dictio
   "topic": "topic name",
   "concepts": ["concept1", "concept2", ...]
 }
-Then, put this list inside a string.
 
 where:
 - `topic` is a string representing the main topic.
@@ -216,10 +215,5 @@ where:
 3. Under each topic, extract relevant subheadings, bullet points, definitions, or key phrases as concepts.
 4. Identify keywords that represent the concepts. Ensure concepts are short and descriptive.
 5. Structure the extracted data into a string with the specified JSON format.
-6. return the structured data as a string.
-
-<output format>
-The output must be ONLY a string, do not add ```json at the beginning or any additional text and marks.
-The string should be formatted as follows:
-"[{"topic":"string","concepts": ["string", "string", ...]}, ...]"
+6. return the structured data.
 """

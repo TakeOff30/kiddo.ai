@@ -1,4 +1,4 @@
-from api.adk.prompts import CONCEPT_CHOOSER_AGENT_INSTRUCTION
+from api.agents.prompts import CONCEPT_CHOOSER_AGENT_INSTRUCTION
 from api.constants.concept_status import WRONG, TO_BE_REPEATED
 from api.models.kiddo import Kiddo
 from sqlmodel import select
