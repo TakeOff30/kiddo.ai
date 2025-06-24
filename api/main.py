@@ -11,7 +11,7 @@ from api.adk.agent import pdf_extractor_agent, root_agent
 from api.services.video_db_service import save_pdf_in_vect_db
 from google.adk.sessions import InMemorySessionService, Session
 
-from .db import create_tables, get_session
+from .db import AsyncSessionFactory, create_tables, get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
 @asynccontextmanager
@@ -93,16 +93,27 @@ async def upload_file(file: UploadFile = File(...), kiddo_id: int = Query(...)):
 
 # TODO: create a session managaer
 SESSION_SERVICE = InMemorySessionService()
+APP_NAME = "my_app"
+USER_ID = "my_user"
+
+async def get_topics():
+    kiddo_id = 1
+    async with AsyncSessionFactory() as session:
+        result = await session.execute(select(Kiddo).where(Kiddo.id == kiddo_id))
+        kiddo = result.scalar_one()
+        return kiddo.topics
 
 @app.post("/api/new_chat")
 async def start_new_chat():
+    topics = await get_topics()
     session = SESSION_SERVICE.create_session(
-        app_name="my_app",
-        user_id="my_user",
-        # state={"initial_key": "initial_value"}
+        app_name=APP_NAME,
+        user_id=USER_ID,
+        state={ "topics": topics }
     )
 
     response = await run_agent(root_agent, build_string_content("Hi there!"), session_id=session.id, session_service=SESSION_SERVICE)
+    
     return { "session_id": session.id, "first_message": response}
 
 class ChatRequest(BaseModel):
