@@ -18,7 +18,7 @@ pdf_extractor_agent = Agent(
 concept_classifier_agent = Agent(
     name='concept_classifier_agent',
     model='gemini-2.0-flash-001',
-    description='The agent that establishes the correctness of the Kiddo\'s understanding of a concept',
+    description='The agent that establishes the correctness of user\'s answare to Kiddo\'s question',
     instruction=CONCEPT_CLASSIFIER_AGENT_INSTRUCTION,
     tools=[],
     output_key='concept_color'
@@ -34,16 +34,16 @@ related_concept_choser_agent = Agent(
 
 node_addition_agent = SequentialAgent(
     name='node_addition_agent',
-    description='The agent that adds nodes to the graph',
+    description='The agent that classifies user\'s answare and adds nodes to the graph',
     sub_agents=[related_concept_choser_agent, concept_classifier_agent],
 )
 
 questioner_agent = Agent(
     model='gemini-2.0-flash-001',
     name='questioner_agent',
-    description='The agent that generates questions curious questions a kid would do',
+    description='The agent that generates questions based on what the Kiddo knows and what it does not know',
     instruction=QUESTIONER_AGENT_INSTRUCTION,
-    tools=[get_known_concepts, get_unknown_concepts]
+    tools=[get_concepts]
 )
 
 root_agent = Agent(

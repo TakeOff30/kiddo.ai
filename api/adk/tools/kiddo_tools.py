@@ -1,5 +1,6 @@
+from http.client import CREATED
 from api.adk.prompts import CONCEPT_CHOOSER_AGENT_INSTRUCTION
-from api.constants.concept_status import WRONG, TO_BE_REPEATED
+from api.constants.concept_status import LEARNED, WRONG, TO_BE_REPEATED
 from api.models.kiddo import Kiddo
 from sqlmodel import select
 from api.db import AsyncSessionFactory
@@ -11,38 +12,56 @@ from google.adk.agents import LlmAgent
 import datetime
 
 
-async def get_known_concepts(cxt: ToolContext) -> list:
+async def get_concepts(topic: str, ctx: ToolContext, status: list[str]) -> dict:
+    topic_key = f"user:topics"  # Using user: prefix makes this persistent across sessions
+    topics = ctx.state.get(topic_key, {})
+
+    # TODO: Filter by Kiddo Id
+    concepts_list = []
+    async with AsyncSessionFactory() as session:
+        query = select(Concept).where(Concept.topic == topic, Concept.status.in_(status))
+        result = await session.execute(query)
+        concepts_list = result.scalars().all()
+
+    texts = [c.text for c in concepts_list]
+    topics[topic] = texts
+
+
+    return {
+        "status": "success",
+        "message": "Topic's known concepts loaded into state in {user:topics} in topic's key",
+    }
+
+
+async def get_known_concepts(topic: str, cxt: ToolContext) -> list:
     """
     This function retrieves from the database the list of concepts that the Kiddo 
     has learned so far.
-    """
-    
-    concepts_list = []
-    async with AsyncSessionFactory() as session:
-        query = select(Concept).where(Concept.status == "learned")
-        result = await session.execute(query)
-        concepts_list = result.scalars().all()
 
-    return concepts_list
+    Args:
+        topic: The topic for which to retrieve known concepts.
+        ctx: Automatically provided by ADK, do not specify when calling.
+        
+    Returns:
+        dict: Status of the get concepts operation.
+    """
+    get_concepts(topic, cxt, status=[ LEARNED ])
 
-async def get_unknown_concepts(cxt: ToolContext) -> str:
+
+async def get_known_concepts(topic: str, cxt: ToolContext) -> list:
     """
-    This function retrieves from the database a list of concepts that the Kiddo has not learned yet
+    This function retrieves from the database the list of concepts that the Kiddo 
+    has not learned yet.
+
+    Args:
+        topic: The topic for which to retrieve unknown concepts.
+        ctx: Automatically provided by ADK, do not specify when calling.
+        
+    Returns:
+        dict: Status of the get concepts operation.
     """
-    kiddo_id = cxt.state["kiddo_id"]
-    async with AsyncSessionFactory() as session:
-        kiddo = select(Kiddo).where(Kiddo.id == kiddo_id)
-        topics = kiddo.get_topics()
-        list_of_topics = [topic["concepts"] for topic in topics]
-    concepts_list = []
-    async with AsyncSessionFactory() as session:
-        query = select(Concept).where(Concept.kiddo_id == kiddo_id)
-        result = await session.execute(query)
-        concepts_list = result.scalars().all()
-    
-    unknown_concepts = [concept for concept in concepts_list if concept not in list_of_topics]
-    
-    return unknown_concepts
+    get_concepts(topic, cxt, status=[ CREATED ])
+
 
 
 async def retrieve_topic(cxt: ToolContext, topic: str,  kiddo_id: int) -> list:
