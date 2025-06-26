@@ -43,7 +43,7 @@ questioner_agent = Agent(
     name='questioner_agent',
     description='The agent that generates questions based on what the Kiddo knows and what it does not know',
     instruction=QUESTIONER_AGENT_INSTRUCTION,
-    tools=[get_concepts]
+    tools=[get_unknown_concepts, get_known_concepts]
 )
 
 root_agent = Agent(
