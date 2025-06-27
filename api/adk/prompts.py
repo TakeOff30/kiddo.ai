@@ -196,29 +196,22 @@ You are a PDF Extractor Agent. Your task is to analyze a PDF file and extract it
 <instruction>
 You will receive a PDF file as input. Your job is to extract structured knowledge from the file by identifying:
 - Main topics (which correspond to the document's primary sections or major headings).
-- Keywords of related concepts (found in sub-sections, bullet points, definitions, or key ideas within each topic). Concepts should be concise, descriptive keywords.
+- Phrases of related concepts (found in sub-sections, bullet points, definitions, or key ideas within each topic). Concepts should be concise, descriptive senteces that represent the essence of the topic.
 
 You must structure this information as a list of dictionaries, where each dictionary contains:
 {
   "topic": "topic name",
   "concepts": ["concept1", "concept2", ...]
 }
-Then, put this list inside a string.
 
 where:
 - `topic` is a string representing the main topic.
-- `concepts` is an array of strings, each string being a **keyword** that represents a concept related to the topic. Avoid extracting entire sentences or phrases as concepts; focus on concise terms.
+- `concepts` is an array of strings, each string being a **sentece** that represents a concept related to the topic.
 
 <steps>
 1. Receive the PDF file as input.
 2. Identify high-level headings or main sections to determine topics. Prioritize clear, distinct headings.
 3. Under each topic, extract relevant subheadings, bullet points, definitions, or key phrases as concepts.
-4. Identify keywords that represent the concepts. Ensure concepts are short and descriptive.
+4. Identify sentences that represent the concepts. Ensure concepts are coincise and descriptive.
 5. Structure the extracted data into a string with the specified JSON format.
-6. return the structured data as a string.
-
-<output format>
-The output must be ONLY a string, do not add ```json at the beginning or any additional text and marks.
-The string should be formatted as follows:
-"[{"topic":"string","concepts": ["string", "string", ...]}, ...]"
 """

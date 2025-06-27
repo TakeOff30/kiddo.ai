@@ -17,7 +17,6 @@ async def run_agent(agent, content, session_id=None, session_service=None):
     if session_id is None:
         session = session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID)
         session_id = session.id
-    print(f"Session ID: {session_id}")
 
     runner = Runner(agent=agent, app_name=APP_NAME, session_service=session_service)
     events = runner.run(user_id=USER_ID, session_id=session_id, new_message=content)
