@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 class Concept(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     text: str
-    keyword: str
+    # keyword: Optional[str]
     topic: str
 
     status: str = Field(default=CREATED)
@@ -22,4 +22,4 @@ class Concept(SQLModel, table=True):
 
     linked_concepts: List["Concept"] = Relationship(back_populates="linked_to")
 
-    created_at: datetime = Field(default_factory=datetime.now(timezone.utc))
+    # created_at: datetime = Field(default_factory=datetime.now(timezone.utc))

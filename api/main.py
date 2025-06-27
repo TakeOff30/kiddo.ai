@@ -82,7 +82,7 @@ async def upload_file(file: UploadFile = File(...), kiddo_id: int = Query(...)):
         tmp.write(stream)
         content = build_pdf_content(stream)
         
-    save_pdf_in_vect_db(tmp.name, file.filename)
+    # save_pdf_in_vect_db(tmp.name, file.filename)
 
     topics = await run_agent(pdf_extractor_agent, content)
 

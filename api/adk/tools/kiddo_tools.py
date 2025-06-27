@@ -48,7 +48,7 @@ async def get_known_concepts(topic: str, cxt: ToolContext) -> list:
     get_concepts(topic, cxt, status=[ LEARNED ])
 
 
-async def get_known_concepts(topic: str, cxt: ToolContext) -> list:
+async def get_unknown_concepts(topic: str, cxt: ToolContext) -> list:
     """
     This function retrieves from the database the list of concepts that the Kiddo 
     has not learned yet.
