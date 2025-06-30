@@ -1,6 +1,6 @@
-from http.client import CREATED
+import json
 from api.adk.prompts import CONCEPT_CHOOSER_AGENT_INSTRUCTION
-from api.constants.concept_status import LEARNED, WRONG, TO_BE_REPEATED
+from api.constants.concept_status import LEARNED, CREATED, WRONG, TO_BE_REPEATED
 from api.models.kiddo import Kiddo
 from sqlmodel import select
 from api.db import AsyncSessionFactory
@@ -12,20 +12,67 @@ from google.adk.agents import LlmAgent
 import datetime
 
 
+def topic_setter(topic: str, tool_context: ToolContext):
+    """
+    This function sets the topic for the Kiddo. It is used to set the topic for the Kiddo.
+    Args:
+        topic (str): The topic to set for the Kiddo.
+        tool_context (ToolContext): Automatically provided by ADK, do not specify when calling.
+    """
+
+    print("XXXXXXX")
+    print("topic_setter INVOKED")
+    print(f"topic: {topic}")
+    print("YYYYYY")
+    print()
+
+    tool_context.state["topic"] = topic
+    return {
+        "status": "success",
+        "message": f"Topic set to {topic}",
+    }
+
+def study_type_setter(study_type: str, tool_context: ToolContext):
+    """
+    This function sets the study type for the Kiddo. It is used to set the study type for the Kiddo.
+
+    Args:
+        study_type (str): The type of study, either "new_concept" or "review".
+        tool_context (ToolContext): Automatically provided by ADK, do not specify when calling.
+    """
+
+    print("XXXXXXX")
+    print("study_type_setter INVOKED")
+    print(f"study_type: {study_type}")
+    print("YYYYYY")
+    print()
+
+    tool_context.state["study_type"] = study_type
+    return {
+        "status": "success",
+        "message": f"Study type set to {study_type}",
+    }
+
 async def get_concepts(topic: str, ctx: ToolContext, status: list[str]) -> dict:
-    topic_key = f"user:topics"  # Using user: prefix makes this persistent across sessions
-    topics = ctx.state.get(topic_key, {})
+    topics_key = "user:topics"  # Persistent state key
+    topics = ctx.state.get(topics_key, {})  # Recupera dizionario esistente o uno nuovo
 
     # TODO: Filter by Kiddo Id
-    concepts_list = []
     async with AsyncSessionFactory() as session:
         query = select(Concept).where(Concept.topic == topic, Concept.status.in_(status))
         result = await session.execute(query)
         concepts_list = result.scalars().all()
 
     texts = [c.text for c in concepts_list]
+
+    # ✅ Aggiorna il dizionario con il topic corrente
     topics[topic] = texts
 
+    # ✅ Salva nel context state
+    ctx.state[topics_key] = topics
+
+    print("VVVVVVV")
+    print(ctx.state[topics_key][topic])
 
     return {
         "status": "success",
@@ -33,22 +80,34 @@ async def get_concepts(topic: str, ctx: ToolContext, status: list[str]) -> dict:
     }
 
 
-async def get_known_concepts(topic: str, cxt: ToolContext) -> list:
+
+async def get_known_concepts(topic: str, tool_context: ToolContext) -> list:
     """
     This function retrieves from the database the list of concepts that the Kiddo 
     has learned so far.
 
     Args:
         topic: The topic for which to retrieve known concepts.
-        ctx: Automatically provided by ADK, do not specify when calling.
+        tool_context: Automatically provided by ADK, do not specify when calling.
         
     Returns:
         dict: Status of the get concepts operation.
     """
-    get_concepts(topic, cxt, status=[ LEARNED ])
+    print("XXXXXXX")
+    print("get_known_concepts INVOKED")
+    print(f"topic: {topic}")
+    print("YYYYYY")
+    print()
+
+    await get_concepts(topic, tool_context, status=[ LEARNED ])
+
+    return {
+        "status": "success",
+        "message": "Topic's known concepts loaded into state in {user:topics} in topic's key",
+    }
 
 
-async def get_unknown_concepts(topic: str, cxt: ToolContext) -> list:
+async def get_unknown_concepts(topic: str, tool_context: ToolContext) -> list:
     """
     This function retrieves from the database the list of concepts that the Kiddo 
     has not learned yet.
@@ -60,7 +119,18 @@ async def get_unknown_concepts(topic: str, cxt: ToolContext) -> list:
     Returns:
         dict: Status of the get concepts operation.
     """
-    get_concepts(topic, cxt, status=[ CREATED ])
+    print("XXXXXXX")
+    print("get_unknown_concepts INVOKED")
+    print(f"topic: {topic}")
+    print("YYYYYY")
+    print()
+
+    await get_concepts(topic, tool_context, status=[ CREATED ])
+
+    return {
+        "status": "success",
+        "message": "Topic's unknown concepts loaded into state in {user:topics} in topic's key",
+    }
 
 
 

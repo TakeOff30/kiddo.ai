@@ -1,5 +1,5 @@
 from api.adk.models.pdf_extraction_output import PdfExtractionOutput
-from api.adk.tools.kiddo_tools import get_known_concepts, retrieve_topic, get_unknown_concepts, retrieve_related_concepts
+from api.adk.tools.kiddo_tools import get_known_concepts, retrieve_topic, get_unknown_concepts, retrieve_related_concepts, study_type_setter, topic_setter
 from api.adk.tools.pdf_tools import save_topic_on_db
 from google.adk.agents import Agent, SequentialAgent
 from .prompts import KIDDO_AGENT_INSTRUCTION, QUESTIONER_AGENT_INSTRUCTION, PDF_EXTRACTOR_AGENT_INSTRUCTION, CONCEPT_CLASSIFIER_AGENT_INSTRUCTION, RELATED_CONCEPT_CHOOSER_AGENT_INSTRUCTION
@@ -43,6 +43,7 @@ questioner_agent = Agent(
     name='questioner_agent',
     description='The agent that generates questions based on what the Kiddo knows and what it does not know',
     instruction=QUESTIONER_AGENT_INSTRUCTION,
+    output_key='last_question',
     tools=[get_unknown_concepts, get_known_concepts]
 )
 
@@ -51,6 +52,7 @@ root_agent = Agent(
     name='root_agent',
     description='The main agent simulating the Kiddo',
     instruction=KIDDO_AGENT_INSTRUCTION,
+    tools=[topic_setter, study_type_setter],
     sub_agents=[questioner_agent, node_addition_agent],
 )
 

@@ -19,12 +19,12 @@ async def run_agent(agent, content, session_id=None, session_service=None):
         session_id = session.id
 
     runner = Runner(agent=agent, app_name=APP_NAME, session_service=session_service)
-    events = runner.run(user_id=USER_ID, session_id=session_id, new_message=content)
 
-    for event in events:
+    async for event in runner.run_async(user_id=USER_ID, session_id=session_id, new_message=content):
         if event.is_final_response():
             final_response = event.content.parts[0].text
             return final_response
+
     
 
 def build_string_content(prompt):
