@@ -12,6 +12,8 @@ from google.adk.agents import LlmAgent
 import datetime
 
 
+TOPICS_KEY = "user:topics"
+
 def topic_setter(topic: str, tool_context: ToolContext):
     """
     This function sets the topic for the Kiddo. It is used to set the topic for the Kiddo.
@@ -54,8 +56,7 @@ def study_type_setter(study_type: str, tool_context: ToolContext):
     }
 
 async def get_concepts(topic: str, ctx: ToolContext, status: list[str]) -> dict:
-    topics_key = "user:topics"  # Persistent state key
-    topics = ctx.state.get(topics_key, {})  # Recupera dizionario esistente o uno nuovo
+    topics = ctx.state.get(TOPICS_KEY, {})
 
     # TODO: Filter by Kiddo Id
     async with AsyncSessionFactory() as session:
@@ -65,14 +66,12 @@ async def get_concepts(topic: str, ctx: ToolContext, status: list[str]) -> dict:
 
     texts = [c.text for c in concepts_list]
 
-    # ✅ Aggiorna il dizionario con il topic corrente
     topics[topic] = texts
 
-    # ✅ Salva nel context state
-    ctx.state[topics_key] = topics
+    ctx.state[TOPICS_KEY] = topics
 
     print("VVVVVVV")
-    print(ctx.state[topics_key][topic])
+    print(ctx.state[TOPICS_KEY][topic])
 
     return {
         "status": "success",
@@ -133,17 +132,27 @@ async def get_unknown_concepts(topic: str, tool_context: ToolContext) -> list:
     }
 
 
+def user_explaination_setter(user_explanation: str, tool_context: ToolContext):
+    """
+    This function sets the user explanation for the Kiddo. It is used to set the user explanation for the Kiddo.
 
-async def retrieve_topic(cxt: ToolContext, topic: str,  kiddo_id: int) -> list:
+    Args:
+        user_explanation (str): The explanation provided by the user.
+        tool_context (ToolContext): Automatically provided by ADK, do not specify when calling.
     """
-    This function retrieves from vectorial database the chunks of notes related to the topic
-    """
-    async with AsyncSessionFactory() as session:
-        kiddo = select(Kiddo).where(Kiddo.id == kiddo_id)
-        topics = kiddo.get_topics()
-        related_concepts = topics[topic]["concepts"]
-    
-    return related_concepts
+
+    print("XXXXXXX")
+    print("user_explaination_setter INVOKED")
+    print(f"user_explanation: {user_explanation}")
+    print("YYYYYY")
+    print()
+
+    tool_context.state["user_explanation"] = user_explanation
+
+    return {
+        "status": "success",
+        "message": f"User explanation set to {user_explanation}",
+    }
 
 async def get_pdf_concepts(cxt: ToolContext, concepts_context: str) -> list:
     """
@@ -163,10 +172,14 @@ async def retrieve_related_concepts(cxt: ToolContext, concept: str):
     """
     This function retrieves from the database the list of concepts related to the topic
     """
-    cxt.state["concept_to_link"] = concept
-    agent_tool = AgentTool(agent=concept_choser_agent)
-    concepts = await agent_tool.run_async()
-    return concepts
+
+    print("XXXXXXX")
+    print("retrieve_related_concepts INVOKED")
+    print()
+    
+    print("YYYEEEEEEEEE")
+    print(cxt.state["concept_classification_result"])
+    return []
 
 
 async def insert_concept(concept_keyword, cxt: ToolContext):
